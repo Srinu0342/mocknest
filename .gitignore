@@ -4,6 +4,8 @@
 *.out
 *.app
 
+mocks/
+
 # Vendor folder (optional)
 vendor/
 
