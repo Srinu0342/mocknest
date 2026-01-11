@@ -1,0 +1,13 @@
+# Binaries
+/tmp
+*.exe
+*.out
+*.app
+
+# Vendor folder (optional)
+vendor/
+
+# IDE / editor files
+.vscode/
+.idea/
+*.swp
