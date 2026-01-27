@@ -6,14 +6,15 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"time"
 
+	"mocknest/server/generator"
 	"mocknest/server/handler"
 )
 
 func main() {
+	generator.GenerateMappings()
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		method := handler.Handler(r.Method) // Example usage of the handler package
+		response := handler.Handler(r.Method)
 
 		bodyBytes, err := io.ReadAll(r.Body)
 		if err != nil {
@@ -28,17 +29,6 @@ func main() {
 			}
 		}
 
-		response := map[string]any{
-			"check":  "ok",
-			"method": method,
-			"path":   r.URL.Path,
-			"query":  r.URL.Query(),
-			"body":   body,
-			"time":   time.Now(),
-		}
-
-		log.Println(r.URL.Path)
-		log.Println(body)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 

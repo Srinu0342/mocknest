@@ -1,5 +1,5 @@
 package handler
 
-func handlePostCall() string {
-	return "post handled"
+func handlePostCall() map[string]any {
+	return responseCreator("POST", "post handled")
 }
