@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 
+	"mocknest/server/appdata"
 	"mocknest/server/generator"
 	"mocknest/server/handler"
 )
@@ -14,8 +15,6 @@ import (
 func main() {
 	generator.GenerateMappings()
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		response := handler.Handler(r.Method)
-
 		bodyBytes, err := io.ReadAll(r.Body)
 		if err != nil {
 			http.Error(w, "failed to read body", http.StatusBadRequest)
@@ -29,10 +28,22 @@ func main() {
 			}
 		}
 
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
+		incoming := appdata.IncomingRequest{
+			Method: r.Method,
+			// Use RequestURI so query string is visible for debugging; matching uses URL + Query.
+			URL:   r.URL.Path,
+			Query: r.URL.Query(),
+			Body:  body,
+		}
 
-		if err := json.NewEncoder(w).Encode(response); err != nil {
+		status, headers, respBody := handler.Handler(incoming)
+
+		for k, v := range headers {
+			w.Header().Set(k, v)
+		}
+		w.WriteHeader(status)
+
+		if err := json.NewEncoder(w).Encode(respBody); err != nil {
 			http.Error(w, "failed to encode json", http.StatusInternalServerError)
 		}
 	})

@@ -1,32 +1,50 @@
 package handler
 
-import "time"
+import (
+	"time"
 
-func Handler(method string) map[string]any {
-	switch method {
-	case "POST":
-		return handlePostCall()
-	case "GET":
-		return handleGetCall()
-	case "PUT":
-		value, error := handlePutCall()
-		if error != nil {
-			return map[string]any{
-				"error": error.Error(),
+	"mocknest/server/appdata"
+)
+
+// Handler is the main entrypoint for matching an HTTP request against the
+// loaded mock mappings. It returns the HTTP status, headers, and body to send.
+func Handler(req appdata.IncomingRequest) (int, map[string]string, any) {
+	mapping, ok := appdata.Global.FindBestMatch(req)
+	if !ok {
+		// No mapping matched: return a simple 404 JSON body.
+		return httpStatusNotFound(), map[string]string{
+				"Content-Type": "application/json",
+			}, map[string]any{
+				"error":  "no mock mapping found",
+				"method": req.Method,
+				"url":    req.URL,
 			}
-		}
-		return value
 	}
-	return responseCreator("UNKNOWN", "unknown method")
+
+	resp := mapping.Response
+	status := resp.Status
+	if status == 0 {
+		status = 200
+	}
+
+	// Optional artificial delay for simulating latency.
+	if resp.FixedDelayMs > 0 {
+		time.Sleep(time.Duration(resp.FixedDelayMs) * time.Millisecond)
+	}
+
+	headers := make(map[string]string, len(resp.Headers))
+	for k, v := range resp.Headers {
+		headers[k] = v
+	}
+	// Ensure Content-Type is set for JSON responses if not provided.
+	if _, ok := headers["Content-Type"]; !ok {
+		headers["Content-Type"] = "application/json"
+	}
+
+	return status, headers, resp.Body
 }
 
-func responseCreator(method string, body any) map[string]any {
-	response := map[string]any{
-		"check":  "ok",
-		"method": method,
-		"body":   body,
-		"time":   time.Now(),
-	}
-
-	return response
+func httpStatusNotFound() int {
+	// Avoid importing net/http just for the constant; keep it simple.
+	return 404
 }
