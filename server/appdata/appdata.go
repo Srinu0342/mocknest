@@ -70,6 +70,12 @@ type RuntimeIndex struct {
 	count   int
 }
 
+// in-memory snapshot of all loaded mappings (raw config), for admin APIs.
+var (
+	mappingsMu  sync.RWMutex
+	allMappings []Mapping
+)
+
 func NewRuntimeIndex() *RuntimeIndex {
 	return &RuntimeIndex{
 		methods: make(map[string]*methodNode),
@@ -82,6 +88,29 @@ func (ri *RuntimeIndex) Reset() {
 	ri.methods = make(map[string]*methodNode)
 	ri.order = 0
 	ri.count = 0
+}
+
+// ResetMappings clears the global mappings list.
+func ResetMappings() {
+	mappingsMu.Lock()
+	defer mappingsMu.Unlock()
+	allMappings = nil
+}
+
+// RegisterMapping adds a mapping to the global list for admin/introspection.
+func RegisterMapping(m Mapping) {
+	mappingsMu.Lock()
+	defer mappingsMu.Unlock()
+	allMappings = append(allMappings, m)
+}
+
+// GetAllMappings returns a copy of all registered mappings.
+func GetAllMappings() []Mapping {
+	mappingsMu.RLock()
+	defer mappingsMu.RUnlock()
+	out := make([]Mapping, len(allMappings))
+	copy(out, allMappings)
+	return out
 }
 
 func (ri *RuntimeIndex) Count() int {

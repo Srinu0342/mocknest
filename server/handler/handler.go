@@ -10,38 +10,61 @@ import (
 // loaded mock mappings. It returns the HTTP status, headers, and body to send.
 func Handler(req appdata.IncomingRequest) (int, map[string]string, any) {
 	mapping, ok := appdata.Global.FindBestMatch(req)
+
+	var (
+		status    int
+		headers   map[string]string
+		respBody  any
+		mappingID string
+	)
+
 	if !ok {
 		// No mapping matched: return a simple 404 JSON body.
-		return httpStatusNotFound(), map[string]string{
-				"Content-Type": "application/json",
-			}, map[string]any{
-				"error":  "no mock mapping found",
-				"method": req.Method,
-				"url":    req.URL,
-			}
+		status = httpStatusNotFound()
+		headers = map[string]string{
+			"Content-Type": "application/json",
+		}
+		respBody = map[string]any{
+			"error":  "no mock mapping found",
+			"method": req.Method,
+			"url":    req.URL,
+		}
+	} else {
+		mappingID = mapping.ID
+		resp := mapping.Response
+		status = resp.Status
+		if status == 0 {
+			status = 200
+		}
+
+		// Optional artificial delay for simulating latency.
+		if resp.FixedDelayMs > 0 {
+			time.Sleep(time.Duration(resp.FixedDelayMs) * time.Millisecond)
+		}
+
+		headers = make(map[string]string, len(resp.Headers))
+		for k, v := range resp.Headers {
+			headers[k] = v
+		}
+		// Ensure Content-Type is set for JSON responses if not provided.
+		if _, ok := headers["Content-Type"]; !ok {
+			headers["Content-Type"] = "application/json"
+		}
+		respBody = resp.Body
 	}
 
-	resp := mapping.Response
-	status := resp.Status
-	if status == 0 {
-		status = 200
-	}
+	// Record the call in global in-memory history.
+	appdata.RecordCall(appdata.CallRecord{
+		Time:        time.Now(),
+		Method:      req.Method,
+		URL:         req.URL,
+		Query:       req.Query,
+		RequestBody: req.Body,
+		MappingID:   mappingID,
+		Status:      status,
+	})
 
-	// Optional artificial delay for simulating latency.
-	if resp.FixedDelayMs > 0 {
-		time.Sleep(time.Duration(resp.FixedDelayMs) * time.Millisecond)
-	}
-
-	headers := make(map[string]string, len(resp.Headers))
-	for k, v := range resp.Headers {
-		headers[k] = v
-	}
-	// Ensure Content-Type is set for JSON responses if not provided.
-	if _, ok := headers["Content-Type"]; !ok {
-		headers["Content-Type"] = "application/json"
-	}
-
-	return status, headers, resp.Body
+	return status, headers, respBody
 }
 
 func httpStatusNotFound() int {

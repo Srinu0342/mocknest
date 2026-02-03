@@ -25,8 +25,8 @@ WORKDIR /app
 # Copy binary from builder stage
 COPY --from=builder /app/server .
 
-# Expose port (your Go app listens on 8080)
-EXPOSE 8080
+# Expose port (your Go app listens on 8342)
+EXPOSE 8342
 
 # Run the binary
 CMD ["./server"]

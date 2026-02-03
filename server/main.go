@@ -14,6 +14,27 @@ import (
 
 func main() {
 	generator.GenerateMappings()
+
+	// Admin endpoints
+	http.HandleFunc("/__admin/mocks", func(w http.ResponseWriter, r *http.Request) {
+		mocks := appdata.GetAllMappings()
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(mocks); err != nil {
+			http.Error(w, "failed to encode mocks json", http.StatusInternalServerError)
+			return
+		}
+	})
+
+	http.HandleFunc("/__admin/history", func(w http.ResponseWriter, r *http.Request) {
+		history := appdata.GetCallHistory()
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(history); err != nil {
+			http.Error(w, "failed to encode history json", http.StatusInternalServerError)
+			return
+		}
+	})
+
+	// Catch-all mock handler
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		bodyBytes, err := io.ReadAll(r.Body)
 		if err != nil {
@@ -50,7 +71,7 @@ func main() {
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080"
+		port = "8342"
 	}
 
 	log.Println("listening on port:", port)

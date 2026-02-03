@@ -16,6 +16,7 @@ func GenerateMappings() {
 	}
 
 	appdata.Global.Reset()
+	appdata.ResetMappings()
 
 	loaded := 0
 	for i, item := range data {
@@ -37,6 +38,7 @@ func GenerateMappings() {
 			log.Printf("Skipping mapping id=%q: %v", m.ID, err)
 			continue
 		}
+		appdata.RegisterMapping(m)
 		loaded++
 	}
 
