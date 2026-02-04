@@ -1,0 +1,30 @@
+name: Enforce Repo Security
+on:
+  push:
+    paths:
+    - 'repo-config.json'
+
+jobs:
+  apply-settings:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Apply Rulesets via GH CLI
+      env:
+        GH_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
+      run: |
+        # 1. Enable Secret Scanning & Push Protection (Direct commands)
+        gh repo edit ${{ github.repository }} --enable-secret-scanning --enable-push-protection
+
+        # 2. Check if the ruleset already exists
+        RULESET_ID=$(gh api repos/${{ github.repository }}/rulesets --jq '.[] | select(.name=="Default Safety Rules") | .id')
+
+        if [ -z "$RULESET_ID" ]; then
+          echo "Creating new ruleset..."
+          gh api repos/${{ github.repository }}/rulesets -m POST --input .github/configs/github-ruleset.json
+        else
+          echo "Updating existing ruleset $RULESET_ID..."
+          gh api repos/${{ github.repository }}/rulesets/$RULESET_ID -m PUT --input .github/configs/github-ruleset.json
+        fi
