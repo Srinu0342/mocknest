@@ -1,8 +1,9 @@
 name: Enforce Repo Security
 on:
   push:
+    branches: [ main ]
     paths:
-    - 'repo-config.json'
+    - '.github/configs/**'
 
 jobs:
   apply-settings:
