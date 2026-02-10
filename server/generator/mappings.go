@@ -42,5 +42,5 @@ func GenerateMappings() {
 		loaded++
 	}
 
-	log.Printf("Mappings loaded: %d/%d (runtime index count=%d)", loaded, len(data), appdata.Global.Count())
+	log.Printf("Mappings loaded: %d/%d (runtime index count=%d) done", loaded, len(data), appdata.Global.Count())
 }
