@@ -15,9 +15,6 @@ jobs:
   docker-publish:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-
     - name: Set version
       id: version
       run: |
@@ -26,6 +23,11 @@ jobs:
         else
           echo "tag=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
         fi
+
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ steps.version.outputs.ref_name }}
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
@@ -40,10 +42,9 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         context: .
-        platforms: linux/amd64,linux/arm64,linux/arm/v7
+        file: ./Dockerfile
         push: true
         tags: |
           ${{ secrets.DOCKERHUB_USERNAME }}/mocknest:${{ steps.version.outputs.tag }}
           ${{ secrets.DOCKERHUB_USERNAME }}/mocknest:latest
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+        platforms: linux/amd64,linux/arm64,linux/arm/v7
