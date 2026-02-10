@@ -12,7 +12,11 @@
   },
   "rules": [
     {
-      "type": "deletion"
+      "type": "deletion",
+      "parameters": {
+        "required_approving_review_count": 1,
+        "require_code_owner_review": true
+      }
     },
     {
       "type": "non_fast_forward"

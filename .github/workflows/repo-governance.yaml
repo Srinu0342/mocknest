@@ -14,7 +14,7 @@ jobs:
 
     - name: Apply Rulesets via GH CLI
       env:
-        GH_TOKEN: ${{ github.token }}
+        GH_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
       run: |
         # 1. Enable Secret Scanning & Push Protection via API
         gh api repos/${{ github.repository }} -X PATCH -f security_and_analysis='{"secret_scanning": {"state": "enabled", "push_protection": {"state": "enabled"}}}'
