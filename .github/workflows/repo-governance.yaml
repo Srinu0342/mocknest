@@ -29,5 +29,5 @@ jobs:
           gh api repos/${{ github.repository }}/rulesets -X POST --input .github/configs/github-ruleset.json
         else
           echo "Updating existing ruleset $RULESET_ID..."
-          gh api repos/${{ github.repository }}/rulesets/$RULESET_ID -m PUT --input .github/configs/github-ruleset.json
+          gh api repos/${{ github.repository }}/rulesets/$RULESET_ID -X PUT --input .github/configs/github-ruleset.json
         fi
