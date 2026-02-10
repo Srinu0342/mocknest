@@ -15,10 +15,7 @@
       "type": "deletion"
     },
     {
-      "type": "non_fast_forward",
-      "parameters": {
-        "enabled": true
-      }
+      "type": "non_fast_forward"
     },
     {
       "type": "pull_request",
