@@ -20,10 +20,7 @@
     {
       "type": "pull_request",
       "parameters": {
-        "required_approving_review_count": 1,
-        "required_review_thread_resolution": true,
-        "require_code_owner_review": true,
-        "dismiss_stale_reviews_on_push": true
+        "require_code_owner_review": true
       }
     }    
   ]
