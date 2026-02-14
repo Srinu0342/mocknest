@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"log"
 
-	"mocknest/server/appdata"
+	"github.com/Srinu0342/mocknest/server/appdata"
 )
 
 func GenerateMappings() {

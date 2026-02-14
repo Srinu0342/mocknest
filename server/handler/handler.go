@@ -3,7 +3,7 @@ package handler
 import (
 	"time"
 
-	"mocknest/server/appdata"
+	"github.com/Srinu0342/mocknest/server/appdata"
 )
 
 // Handler is the main entrypoint for matching an HTTP request against the

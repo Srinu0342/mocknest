@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"os"
 
-	"mocknest/server/appdata"
-	"mocknest/server/generator"
-	"mocknest/server/handler"
+	"github.com/Srinu0342/mocknest/server/appdata"
+	"github.com/Srinu0342/mocknest/server/generator"
+	"github.com/Srinu0342/mocknest/server/handler"
 )
 
 func main() {
