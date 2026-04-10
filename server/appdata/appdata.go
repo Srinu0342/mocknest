@@ -48,6 +48,16 @@ type Response struct {
 	Headers      map[string]string `json:"headers,omitempty"`
 	Body         any               `json:"body,omitempty"`
 	FixedDelayMs int               `json:"fixedDelayMs,omitempty"`
+	Webhook      *Webhook          `json:"webhook,omitempty"`
+}
+
+type Webhook struct {
+	Method    string            `json:"method,omitempty"`
+	URL       string            `json:"url"`
+	Headers   map[string]string `json:"headers,omitempty"`
+	Body      any               `json:"body,omitempty"`
+	Retries   int               `json:"retries,omitempty"`
+	TimeoutMs int               `json:"timeoutMs,omitempty"`
 }
 
 // IncomingRequest is the normalized shape used to match a runtime stub.

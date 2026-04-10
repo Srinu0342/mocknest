@@ -8,13 +8,14 @@ import (
 // CallRecord captures a single incoming HTTP call and which mapping (if any)
 // was used to generate the response.
 type CallRecord struct {
-	Time        time.Time           `json:"time"`
-	Method      string              `json:"method"`
-	URL         string              `json:"url"`
-	Query       map[string][]string `json:"query,omitempty"`
-	RequestBody any                 `json:"requestBody,omitempty"`
-	MappingID   string              `json:"mappingId,omitempty"`
-	Status      int                 `json:"status"`
+	Time          time.Time           `json:"time"`
+	Method        string              `json:"method"`
+	URL           string              `json:"url"`
+	Query         map[string][]string `json:"query,omitempty"`
+	RequestBody   any                 `json:"requestBody,omitempty"`
+	MappingID     string              `json:"mappingId,omitempty"`
+	CorrelationID string              `json:"correlationId,omitempty"`
+	Status        int                 `json:"status"`
 }
 
 var (

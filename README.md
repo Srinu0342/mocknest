@@ -177,6 +177,13 @@ On startup, the server loads all `*.json` files from that directory.
   - **`headers`**: Object of header name → value. `"Content-Type": "application/json"` is added if missing.
   - **`body`**: Any JSON-serializable payload to return as the response body.
   - **`fixedDelayMs`**: Optional artificial delay in milliseconds before sending the response (simulates latency).
+  - **`webhook`**: Optional webhook configuration to invoke before the mock response is returned.
+    - **`url`**: Webhook destination URL.
+    - **`method`**: HTTP method to use (default `POST`).
+    - **`headers`**: Optional headers for the webhook request.
+    - **`body`**: JSON payload for the webhook request.
+    - **`retries`**: Number of retry attempts after the first failed webhook send, capped at `3`.
+    - **`timeoutMs`**: Optional timeout for each webhook request in milliseconds.
 
 - **`metadata`**:
   - **`tags`**: Arbitrary labels for grouping/search (used only by admin/introspection, not matching).
