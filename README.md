@@ -50,6 +50,18 @@ You can override the port:
 PORT=8080 go run ./server
 ```
 
+### 2.2. Build and package for CI
+
+For CI, build the Go binary before running Docker. This Dockerfile is runtime-only and expects the compiled `server` binary in the repository root.
+
+```bash
+go test ./...
+CGO_ENABLED=0 GOOS=linux go build -ldflags='-s -w' -o server ./server
+docker build -t mocknest:test .
+```
+
+You can also package the binary into a runtime image from CI or release pipelines.
+
 ### 2.2. Development with Air (Hot Reload)
 
 For development, use **[Air](https://github.com/cosmtrek/air)** to automatically rebuild and restart the server when you change Go files.
